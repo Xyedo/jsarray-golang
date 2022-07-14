@@ -252,3 +252,10 @@ func (slice JSArray) Splice(pointIndex int, removeCount int, element ...any) (JS
 	return undeleted[:pointIndex].Push(end...), deleted
 
 }
+
+func (s JSArray) Includes(searchedVal any) bool {
+	cb := func(element any, index int, array JSArray) bool {
+		return element == searchedVal
+	}
+	return s.Some(cb)
+}

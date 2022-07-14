@@ -47,7 +47,7 @@ func main() {
 	fmt.Println(ex9.CopyWithin(-2))
 	fmt.Println(arrayJS.JSArray{1, 2, 3, 4, 5}.CopyWithin(0, 3))
 	fmt.Println(arrayJS.JSArray{1, 2, 3, 4, 5}.CopyWithin(0, 3, 4))
-	fmt.Println(arrayJS.JSArray{1, 2, 3, 4, 5}.CopyWithin(3, 2, 4))
+	fmt.Println(arrayJS.JSArray{1, 2, 3, 4, 5}.CopyWithin(-2, -3, -1))
 	fmt.Println(arrayJS.JSArray{1, 2, 3, 4, 5}.CopyWithin(0, 2))
 	fmt.Println(arrayJS.JSArray{1, 2, 3, 4, 5}.CopyWithin(0, 3, 4))
 	isBigEnough := func(element any, index int, array arrayJS.JSArray) bool {
