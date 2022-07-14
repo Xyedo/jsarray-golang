@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"xyedo.dev/learnGo/arrayJS"
+	"github.com/xyedo/jsarray-golang/arrayJS"
 )
 
 func main() {
@@ -92,4 +92,14 @@ func main() {
 	fmt.Println(sum)
 	fmt.Println(arrayJS.JSArray{2, 5, 8, 1, 4}.Some(isBigEnough))
 	fmt.Println(arrayJS.JSArray{12, 5, 8, 1, 4}.Some(isBigEnough))
+	array1 := arrayJS.JSArray{"a", "b", "c"}
+	array2 := arrayJS.JSArray{1, 2, 3}
+	fmt.Println(array1.Concat(array2...))
+
+	num1 := arrayJS.JSArray{1, 2, 3}
+	num2 := arrayJS.JSArray{4, 5, 6}
+	num3 := arrayJS.JSArray{7, 8, 9}
+
+	fmt.Println(num1.Concat(num2...).Concat(num3...))
+
 }

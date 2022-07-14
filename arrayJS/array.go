@@ -102,11 +102,20 @@ func (s JSArray) Find(callback func(element any, index int, array JSArray) bool)
 	}
 	return s[index], true
 }
+func (s JSArray) Concat(value ...any) JSArray {
+	return s.Push(value...)
+}
 
 // func (s JSArray) Flat(depth int) JSArray {
 // 	if depth < 1 || !IsArray(s) {
 // 		return s
 // 	}
+// 	return s.Reduce(func(previousValue, curentValue any, currentIndex int, array JSArray) any {
+// 		res := New(10)
+// 		res.Push(previousValue)
+
+// 		return res.Concat(curentValue)
+// 	})
 
 // }
 func (s JSArray) Reduce(callback func(previousValue, curentValue any, currentIndex int, array JSArray) any, initValue any) any {
