@@ -13,7 +13,7 @@ func main() {
   arr :=arrayJS.JSArray{1,2,3,4} //creating JSarray using array literal
 }
 ```
-#### JS Array() -> New(size) 
+#### JS Array() -> New(length) JSArray
 ```go
 import arrayJS "github.com/Xyedo/jsarray-golang/arrayJS"
 func main() {
