@@ -59,11 +59,12 @@ func main() {
 	}
 	fmt.Println(arrayJS.JSArray{12, 5, 8, 130, 44}.Every(isBigEnough))
 	fmt.Println(arrayJS.JSArray{12, 54, 18, 130, 44}.Every(isBigEnough))
-	// isSubset = func(arr1, arr2 arrayJS.JSArray) bool {
-	// 	arr2.Every(func(element any, index int, array arrayJS.JSArray) bool {
-
-	// 	})
-	// }
+	isSubset := func(arr1, arr2 arrayJS.JSArray) bool {
+		return arr2.Every(func(element any, index int, array arrayJS.JSArray) bool {
+			return arr1.Includes(element)
+		})
+	}
+	fmt.Println("is Subset", isSubset(arrayJS.JSArray{1, 2, 3, 4, 5, 6, 7}, arrayJS.JSArray{5, 6, 7}))
 	fmt.Println(arrayJS.JSArray{12, 5, 8, 130, 44}.Every(func(element any, index int, array arrayJS.JSArray) bool {
 		el, ok := element.(int)
 		if !ok {
@@ -101,5 +102,12 @@ func main() {
 	num3 := arrayJS.JSArray{7, 8, 9}
 
 	fmt.Println(num1.Concat(num2...).Concat(num3...))
-
+	fmt.Println("Fill")
+	fmt.Println(arrayJS.JSArray{1, 2, 3, 4}.Fill(0, 2, 4))
+	fmt.Println(arrayJS.JSArray{1, 2, 3, 4}.Fill(5, 1))
+	fmt.Println(arrayJS.JSArray{1, 2, 3, 4}.Fill(6))
+	fmt.Println(arrayJS.JSArray{1, 2, 3}.Fill(4, -3, -2))
+	fmt.Println("Filter")
+	fmt.Println(arrayJS.JSArray{12, 5, 8, 130, 44}.Filter(isBigEnough))
+	fmt.Println(arrayJS.JSArray{12, 5, 8, 130, 44}.Find(isBigEnough))
 }

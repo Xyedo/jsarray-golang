@@ -95,12 +95,12 @@ func (s JSArray) FindIndex(callback func(element any, index int, array JSArray) 
 	return -1
 }
 
-func (s JSArray) Find(callback func(element any, index int, array JSArray) bool) (any, bool) {
+func (s JSArray) Find(callback func(element any, index int, array JSArray) bool) any {
 	index := s.FindIndex(callback)
 	if index == -1 {
-		return nil, false
+		return nil
 	}
-	return s[index], true
+	return s[index]
 }
 func (s JSArray) Concat(value ...any) JSArray {
 	return s.Push(value...)
@@ -144,7 +144,13 @@ func (s JSArray) Fill(val any, params ...int) JSArray {
 		start = params[0]
 		end = params[1]
 	}
-	for i := start; i <= end; i++ {
+	for start < 0 {
+		start = s.Length() + start
+	}
+	for end < 0 {
+		end = s.Length() + end
+	}
+	for i := start; i < end; i++ {
 		s[i] = val
 	}
 	return s
@@ -191,7 +197,7 @@ func (s JSArray) Filter(callback func(element any, index int, array JSArray) boo
 	for i := 0; i < len; i++ {
 		val := s[i]
 		if callback(val, i, s) {
-			res.Push(val)
+			res = res.Push(val)
 		}
 	}
 	return res
