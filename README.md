@@ -322,6 +322,7 @@ myFish := arrayJS.JSArray{"angel", "clown", "mandarin", "sturgeon"}
 	ex6, removed6 := forEx6.Splice(2, 2) //[parrot anemone sturgeon] [blue trumpet]
 }
 
+```
 #### JS Array.prototype.unshift() -> JSArray.Unshift(element ...any) JSArray
 ```go
 import arrayJS "github.com/Xyedo/jsarray-golang/arrayJS"
@@ -329,7 +330,6 @@ func main() {
 arrayJS.JSArray{1, 2, 3, 4, 5}.Unshift(10,11) //[1,2,3,4,5,10,11]
 }
 ```
-
 
 
 
