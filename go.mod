@@ -1,3 +1,3 @@
-module github.com/xyedo/jsarray-golang
+module github.com/Xyedo/jsarray-golang
 
 go 1.18

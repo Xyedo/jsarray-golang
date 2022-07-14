@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/xyedo/jsarray-golang/arrayJS"
+	"github.com/Xyedo/jsarray-golang/arrayJS"
 )
 
 func main() {
