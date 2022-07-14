@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	arrayJS.New(10)
 	myFish := arrayJS.JSArray{"angel", "clown", "mandarin", "sturgeon"}
 	ex1, _ := myFish.Splice(2, 0, "drum")
 	fmt.Println("ex1:", ex1)
@@ -29,5 +30,13 @@ func main() {
 	forEx7 := arrayJS.JSArray{"angel", "clown", "mandarin", "sturgeon"}
 	ex7, removed7 := forEx7.Splice(2, 2)
 	fmt.Println("ex7:", ex7, removed7)
-
+	ex8 := arrayJS.JSArray{1, 2, 3, 4, 5}
+	ex8, poppedVal := ex8.Pop()
+	fmt.Println(ex8, poppedVal)
+	ex8 = ex8.Push(1, 3, 6)
+	fmt.Println(ex8)
+	ex8, shiftedVal := ex8.Shift()
+	fmt.Println(ex8, shiftedVal)
+	ex8 = ex8.Unshift(10, 11)
+	fmt.Println(ex8)
 }

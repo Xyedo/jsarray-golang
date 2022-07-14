@@ -8,6 +8,9 @@ package arrayJS
 // }
 type JSArray []any
 
+func New(size int) JSArray {
+	return make(JSArray, size)
+}
 func (s JSArray) Pop() (JSArray, any) {
 	return s[:len(s)-1], s[len(s)-1]
 }
@@ -17,7 +20,7 @@ func (s JSArray) Push(elem ...any) JSArray {
 }
 
 func (s JSArray) Shift() (JSArray, any) {
-	return s[1:], s[1]
+	return s[1:], s[0]
 }
 
 func (s JSArray) Unshift(element ...any) JSArray {
