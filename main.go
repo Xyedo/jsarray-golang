@@ -7,7 +7,9 @@ import (
 )
 
 func main() {
-	arrayJS.New(10)
+	test := arrayJS.New(10)
+	isarr := arrayJS.IsArray(test)
+	fmt.Println(isarr)
 	myFish := arrayJS.JSArray{"angel", "clown", "mandarin", "sturgeon"}
 	ex1, _ := myFish.Splice(2, 0, "drum")
 	fmt.Println("ex1:", ex1)
@@ -39,4 +41,55 @@ func main() {
 	fmt.Println(ex8, shiftedVal)
 	ex8 = ex8.Unshift(10, 11)
 	fmt.Println(ex8)
+
+	ex9 := arrayJS.JSArray{1, 2, 3, 4, 5}
+	fmt.Println(ex9.Length())
+	fmt.Println(ex9.CopyWithin(-2))
+	fmt.Println(arrayJS.JSArray{1, 2, 3, 4, 5}.CopyWithin(0, 3))
+	fmt.Println(arrayJS.JSArray{1, 2, 3, 4, 5}.CopyWithin(0, 3, 4))
+	fmt.Println(arrayJS.JSArray{1, 2, 3, 4, 5}.CopyWithin(3, 2, 4))
+	fmt.Println(arrayJS.JSArray{1, 2, 3, 4, 5}.CopyWithin(0, 2))
+	fmt.Println(arrayJS.JSArray{1, 2, 3, 4, 5}.CopyWithin(0, 3, 4))
+	isBigEnough := func(element any, index int, array arrayJS.JSArray) bool {
+		el, ok := element.(int)
+		if !ok {
+			return false
+		}
+		return el >= 10
+	}
+	fmt.Println(arrayJS.JSArray{12, 5, 8, 130, 44}.Every(isBigEnough))
+	fmt.Println(arrayJS.JSArray{12, 54, 18, 130, 44}.Every(isBigEnough))
+	// isSubset = func(arr1, arr2 arrayJS.JSArray) bool {
+	// 	arr2.Every(func(element any, index int, array arrayJS.JSArray) bool {
+
+	// 	})
+	// }
+	fmt.Println(arrayJS.JSArray{12, 5, 8, 130, 44}.Every(func(element any, index int, array arrayJS.JSArray) bool {
+		el, ok := element.(int)
+		if !ok {
+			return false
+		}
+		return el >= 10
+	}))
+	fmt.Println(arrayJS.JSArray{12, 54, 18, 130, 44}.Every(func(element any, index int, array arrayJS.JSArray) bool {
+		el, ok := element.(int)
+		if !ok {
+			return false
+		}
+		return el >= 10
+	}))
+	sum := arrayJS.JSArray{0, 1, 2, 3}.Reduce(func(previousValue, curentValue any, currentIndex int, array arrayJS.JSArray) any {
+		prevVal, ok := previousValue.(int)
+		if !ok {
+			return nil
+		}
+		currVal, ok := curentValue.(int)
+		if !ok {
+			return nil
+		}
+		return prevVal + currVal
+	}, 0)
+	fmt.Println(sum)
+	fmt.Println(arrayJS.JSArray{2, 5, 8, 1, 4}.Some(isBigEnough))
+	fmt.Println(arrayJS.JSArray{12, 5, 8, 1, 4}.Some(isBigEnough))
 }

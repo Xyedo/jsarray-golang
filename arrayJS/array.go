@@ -1,18 +1,194 @@
 package arrayJS
 
+import (
+	"fmt"
+	"reflect"
+)
+
 // import "fmt"
 
 // func main() {
 // 	testSlice := []int{1, 2, 3, 4}
 
 // }
-type JSArray []any
-
 func New(size int) JSArray {
 	return make(JSArray, size)
 }
+
+func IsArray(src any) bool {
+	return reflect.Slice == reflect.TypeOf(src).Kind()
+}
+
+type JSArray []any
+
+func (s JSArray) Length() int {
+	return len(s)
+}
+func (s JSArray) At(i int) any {
+	for i < 0 {
+		i = s.Length() - i
+	}
+	return s[i]
+}
+func (s JSArray) CopyWithin(target int, index ...int) JSArray {
+	for target < 0 {
+		target = s.Length() + target
+	}
+	if target >= s.Length() {
+		return s
+	}
+	start := 0
+	end := s.Length()
+	switch len(index) {
+	case 1:
+		start = index[0]
+	case 2:
+		start = index[0]
+		end = index[1]
+	}
+	for start < 0 {
+		start = s.Length() + start
+	}
+
+	for end < 0 {
+		end = s.Length() + end
+	}
+	if start == end {
+		return s
+	}
+
+	fmt.Println(target, start, end)
+	scopy := New(s.Length())
+	for i := start; i < end; i++ {
+		scopy[i] = s[i]
+	}
+	for i, t := start, target; i < end; i, t = i+1, t+1 {
+		if t >= s.Length() {
+			break
+		}
+
+		s[t] = scopy[i]
+
+	}
+	return s
+}
+
+func (s JSArray) Every(callback func(element any, index int, array JSArray) bool) bool {
+	len := s.Length()
+	for i := 0; i < len; i++ {
+		val := s[i]
+		if !callback(val, i, s) {
+			return false
+		}
+	}
+	return true
+
+}
+func (s JSArray) FindIndex(callback func(element any, index int, array JSArray) bool) int {
+	len := s.Length()
+	for i := 0; i < len; i++ {
+		val := s[i]
+		if callback(val, i, s) {
+			return i
+		}
+	}
+	return -1
+}
+
+func (s JSArray) Find(callback func(element any, index int, array JSArray) bool) (any, bool) {
+	index := s.FindIndex(callback)
+	if index == -1 {
+		return nil, false
+	}
+	return s[index], true
+}
+
+// func (s JSArray) Flat(depth int) JSArray {
+// 	if depth < 1 || !IsArray(s) {
+// 		return s
+// 	}
+
+// }
+func (s JSArray) Reduce(callback func(previousValue, curentValue any, currentIndex int, array JSArray) any, initValue any) any {
+	len := s.Length()
+	acc := initValue
+
+	startIndex := 0
+
+	if initValue == nil {
+		acc = s[0]
+		startIndex = 1
+	}
+	for i := startIndex; i < len; i++ {
+		val := s[i]
+		acc = callback(acc, val, i, s)
+	}
+	return acc
+}
+func (s JSArray) Fill(val any, params ...int) JSArray {
+	start := 0
+	end := s.Length()
+	switch len(params) {
+	case 1:
+		start = params[0]
+	case 2:
+		start = params[0]
+		end = params[1]
+	}
+	for i := start; i <= end; i++ {
+		s[i] = val
+	}
+	return s
+}
+func (s JSArray) Reverse() JSArray {
+	res := New(s.Length())
+	lastIndex := s.Length() - 1
+	for i := lastIndex; i >= 0; i-- {
+		val := s[i]
+		res[lastIndex-i] = val
+	}
+	return res
+}
+func (s JSArray) Slice(params ...int) JSArray {
+	start := 0
+	end := s.Length()
+	switch len(params) {
+	case 1:
+		start = params[0]
+	case 2:
+		start = params[0]
+		end = params[1]
+	}
+	res := New(end - start)
+	for i := start; i < end; i++ {
+		if i < s.Length() {
+			res.Push(s[i])
+		}
+	}
+	return res
+}
+func (s JSArray) Some(callback func(element any, index int, array JSArray) bool) bool {
+	len := s.Length()
+	for i := 0; i < len; i++ {
+		if callback(s[i], i, s) {
+			return true
+		}
+	}
+	return false
+}
+func (s JSArray) Filter(callback func(element any, index int, array JSArray) bool) JSArray {
+	res := JSArray{}
+	len := s.Length()
+	for i := 0; i < len; i++ {
+		val := s[i]
+		if callback(val, i, s) {
+			res.Push(val)
+		}
+	}
+	return res
+}
 func (s JSArray) Pop() (JSArray, any) {
-	return s[:len(s)-1], s[len(s)-1]
+	return s[:s.Length()-1], s[s.Length()-1]
 }
 
 func (s JSArray) Push(elem ...any) JSArray {
@@ -30,19 +206,19 @@ func (s JSArray) Unshift(element ...any) JSArray {
 func (slice JSArray) Splice(pointIndex int, removeCount int, element ...any) (JSArray, JSArray) {
 
 	for pointIndex < 0 {
-		pointIndex = len(slice) - 1 + pointIndex
+		pointIndex = slice.Length() - 1 + pointIndex
 	}
-	if pointIndex > len(slice)-1 {
-		pointIndex = len(slice) - 1
+	if pointIndex > slice.Length()-1 {
+		pointIndex = slice.Length() - 1
 	}
-	if removeCount > pointIndex+len(slice) {
-		removeCount = len(slice)
+	if removeCount > pointIndex+slice.Length() {
+		removeCount = slice.Length()
 	}
-	if pointIndex == len(slice)-1 {
+	if pointIndex == slice.Length()-1 {
 		if removeCount == 0 {
 			return slice.Push(element...), []any{}
 		}
-		return slice[:len(slice)-removeCount].Push(element...), slice[len(slice)-removeCount:]
+		return slice[:slice.Length()-removeCount].Push(element...), slice[slice.Length()-removeCount:]
 
 	}
 	if pointIndex == 0 {
@@ -57,8 +233,8 @@ func (slice JSArray) Splice(pointIndex int, removeCount int, element ...any) (JS
 	}
 
 	deletedEnd := pointIndex + removeCount
-	if deletedEnd > len(slice) {
-		deletedEnd = len(slice)
+	if deletedEnd > slice.Length() {
+		deletedEnd = slice.Length()
 	}
 	deleted := make([]any, removeCount)
 	copy(deleted, slice[pointIndex:deletedEnd])
