@@ -164,6 +164,7 @@ func (s JSArray) Reverse() JSArray {
 		val := s[i]
 		res[lastIndex-i] = val
 	}
+	copy(s, res)
 	return res
 }
 func (s JSArray) Slice(params ...int) JSArray {
@@ -176,7 +177,14 @@ func (s JSArray) Slice(params ...int) JSArray {
 		start = params[0]
 		end = params[1]
 	}
-	res := New(end - start)
+
+	res := JSArray{}
+	if start >= s.Length() {
+		return res
+	}
+	for end < 0 {
+		end = s.Length() + end
+	}
 	for i := start; i < end; i++ {
 		if i < s.Length() {
 			res.Push(s[i])
@@ -281,5 +289,4 @@ func (s JSArray) Map(callback func(element any, index int, array JSArray) any) J
 		res[i] = callback(val, i, s)
 	}
 	return res
-
 }

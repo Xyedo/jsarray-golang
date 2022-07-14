@@ -110,9 +110,29 @@ func main() {
 	fmt.Println(arrayJS.JSArray{1, 2, 3}.Fill(4, -3, -2))
 	fmt.Println("Filter")
 	fmt.Println(arrayJS.JSArray{12, 5, 8, 130, 44}.Filter(isBigEnough))
+	fmt.Println("Find")
 	fmt.Println(arrayJS.JSArray{12, 5, 8, 130, 44}.Find(isBigEnough))
+	fmt.Println("FindIndex")
+	fmt.Println(arrayJS.JSArray{12, 5, 8, 130, 44}.FindIndex(isBigEnough))
+	fmt.Println(arrayJS.JSArray{1, 5, 8, 0, 44}.FindIndex(isBigEnough))
 	fmt.Println("IndexOf")
 	fmt.Println(arrayJS.JSArray{12, 5, 8, 130, 44}.IndexOf(12))
-
 	fmt.Println(arrayJS.JSArray{1, 5, 8, 0, 4}.IndexOf(0))
+	fmt.Println("includes")
+	fmt.Println(arrayJS.JSArray{12, 5, 8, 130, 44}.Includes(5))
+	fmt.Println(arrayJS.JSArray{1, 5, 8, 0, 4}.Includes(-1))
+
+	fmt.Println("Map")
+	fmt.Println(
+		arrayJS.JSArray{12, 5, 8, 130, 44}.Map(func(element any, index int, array arrayJS.JSArray) any {
+			el, ok := element.(int)
+			if !ok {
+				return nil
+			}
+			return el * 2
+		}))
+	fmt.Println("Reverse")
+	arr := arrayJS.JSArray{1, 5, 8, 0, 4}
+	fmt.Println(arr.Reverse())
+	fmt.Println(arr)
 }
