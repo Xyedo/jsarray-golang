@@ -10,6 +10,7 @@ func main() {
 	test := arrayJS.New(10)
 	isarr := arrayJS.IsArray(test)
 	fmt.Println(isarr)
+	fmt.Println(arrayJS.JSArray{1, 2, 3, 4, 5}.At(-2))
 	myFish := arrayJS.JSArray{"angel", "clown", "mandarin", "sturgeon"}
 	ex1, _ := myFish.Splice(2, 0, "drum")
 	fmt.Println("ex1:", ex1)
@@ -110,4 +111,8 @@ func main() {
 	fmt.Println("Filter")
 	fmt.Println(arrayJS.JSArray{12, 5, 8, 130, 44}.Filter(isBigEnough))
 	fmt.Println(arrayJS.JSArray{12, 5, 8, 130, 44}.Find(isBigEnough))
+	fmt.Println("IndexOf")
+	fmt.Println(arrayJS.JSArray{12, 5, 8, 130, 44}.IndexOf(12))
+
+	fmt.Println(arrayJS.JSArray{1, 5, 8, 0, 4}.IndexOf(0))
 }

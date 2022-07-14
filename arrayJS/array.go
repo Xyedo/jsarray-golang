@@ -11,8 +11,8 @@ import (
 // 	testSlice := []int{1, 2, 3, 4}
 
 // }
-func New(size int) JSArray {
-	return make(JSArray, size)
+func New(length int) JSArray {
+	return make(JSArray, length)
 }
 
 func IsArray(src any) bool {
@@ -26,7 +26,7 @@ func (s JSArray) Length() int {
 }
 func (s JSArray) At(i int) any {
 	for i < 0 {
-		i = s.Length() - i
+		i = s.Length() + i
 	}
 	return s[i]
 }
@@ -59,9 +59,7 @@ func (s JSArray) CopyWithin(target int, index ...int) JSArray {
 
 	fmt.Println(target, start, end)
 	scopy := New(s.Length())
-	for i := start; i < end; i++ {
-		scopy[i] = s[i]
-	}
+	copy(scopy, s)
 	for i, t := start, target; i < end; i, t = i+1, t+1 {
 		if t >= s.Length() {
 			break
@@ -103,7 +101,11 @@ func (s JSArray) Find(callback func(element any, index int, array JSArray) bool)
 	return s[index]
 }
 func (s JSArray) Concat(value ...any) JSArray {
-	return s.Push(value...)
+	len := s.Length()
+	res := New(len)
+	copy(res, s)
+	res = res.Push(value...)
+	return res
 }
 
 // func (s JSArray) Flat(depth int) JSArray {
@@ -251,7 +253,7 @@ func (slice JSArray) Splice(pointIndex int, removeCount int, element ...any) (JS
 	if deletedEnd > slice.Length() {
 		deletedEnd = slice.Length()
 	}
-	deleted := make([]any, removeCount)
+	deleted := New(removeCount)
 	copy(deleted, slice[pointIndex:deletedEnd])
 	undeleted := slice[:pointIndex].Push(slice[pointIndex+removeCount:]...)
 	end := JSArray(element).Push(undeleted[pointIndex:]...)
@@ -264,4 +266,20 @@ func (s JSArray) Includes(searchedVal any) bool {
 		return element == searchedVal
 	}
 	return s.Some(cb)
+}
+func (s JSArray) IndexOf(searchedVal any) int {
+	return s.FindIndex(func(element any, index int, array JSArray) bool {
+		return element == searchedVal
+	})
+}
+func (s JSArray) Map(callback func(element any, index int, array JSArray) any) JSArray {
+	len := s.Length()
+	res := New(len)
+
+	for i := 0; i < len; i++ {
+		val := s[i]
+		res[i] = callback(val, i, s)
+	}
+	return res
+
 }
