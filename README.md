@@ -2,7 +2,7 @@
 
 My Journey Learning Golang by Creating Port of Array.Prototype method from Javascript
 
-since Javascript array is a dynamic array with references type, we use slice type in golang
+since Javascript array is a dynamic array with references to backed array, we use slice type in golang since
 slice is a dynamic array with a references types
 
 ## Available method
@@ -17,7 +17,7 @@ func main() {
 ```go
 import arrayJS "github.com/Xyedo/jsarray-golang/arrayJS"
 func main() {
-  arr :=arrayJS.New(10) //will create JSarray with 10 capacity and 0 length
+  arr :=arrayJS.New(10) //will create JSarray with 10 length
 }
 ```
 #### JS Array.isArray()  -> IsArray(src any)
@@ -33,8 +33,8 @@ func main() {
 ```go
 import arrayJS "github.com/Xyedo/jsarray-golang/arrayJS"
 func main() {
-  arr :=arrayJS.New(10) //will create JSarray with 10 capacity and 0 length
-  arr.Length() //will return 0
+  arr :=arrayJS.New(10) //will create JSarray with 10 capacity and 10 length with nil value
+  arr.Length() //will return 10
 }
 ```
 #### JS Array.prototype.at() -> JSArray.At(i int) any
@@ -46,6 +46,7 @@ func main() {
 }
 ```
 #### JS Array.prototype.concat() -> JSArray.Concat(value ...any) JSArray
+will concat and return the new array
 ```go
 import arrayJS "github.com/Xyedo/jsarray-golang/arrayJS"
 func main() {
