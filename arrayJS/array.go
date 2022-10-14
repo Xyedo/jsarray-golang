@@ -1,6 +1,7 @@
 package arrayJS
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 )
@@ -11,26 +12,29 @@ import (
 // 	testSlice := []int{1, 2, 3, 4}
 
 // }
-func New(length int) JSArray {
-	return make(JSArray, length)
+func New[T comparable](values ...T) JSArray[T] {
+
+	jsarry := make(JSArray[T], len(values))
+	copy(jsarry, values)
+	return jsarry
 }
 
 func IsArray(src any) bool {
 	return reflect.Slice == reflect.TypeOf(src).Kind()
 }
 
-type JSArray []any
+type JSArray[T comparable] []T
 
-func (s JSArray) Length() int {
+func (s JSArray[T]) Length() int {
 	return len(s)
 }
-func (s JSArray) At(i int) any {
+func (s JSArray[T]) At(i int) any {
 	for i < 0 {
 		i = s.Length() + i
 	}
 	return s[i]
 }
-func (s JSArray) CopyWithin(target int, index ...int) JSArray {
+func (s JSArray[T]) CopyWithin(target int, index ...int) JSArray[T] {
 	for target < 0 {
 		target = s.Length() + target
 	}
@@ -58,7 +62,7 @@ func (s JSArray) CopyWithin(target int, index ...int) JSArray {
 	}
 
 	fmt.Println(target, start, end)
-	scopy := New(s.Length())
+	scopy := make(JSArray[T], s.Length())
 	copy(scopy, s)
 	for i, t := start, target; i < end; i, t = i+1, t+1 {
 		if t >= s.Length() {
@@ -71,38 +75,43 @@ func (s JSArray) CopyWithin(target int, index ...int) JSArray {
 	return s
 }
 
-func (s JSArray) Every(callback func(element any, index int, array JSArray) bool) bool {
+func (s JSArray[T]) Every(cb func(element T, index int, array JSArray[T]) bool) bool {
+
 	len := s.Length()
 	for i := 0; i < len; i++ {
 		val := s[i]
-		if !callback(val, i, s) {
+		if !cb(val, i, s) {
 			return false
 		}
 	}
 	return true
 
 }
-func (s JSArray) FindIndex(callback func(element any, index int, array JSArray) bool) int {
+func (s JSArray[T]) FindIndex(cb func(element T, index int, array JSArray[T]) bool) int {
+
 	len := s.Length()
 	for i := 0; i < len; i++ {
 		val := s[i]
-		if callback(val, i, s) {
+		if cb(val, i, s) {
 			return i
 		}
 	}
 	return -1
 }
 
-func (s JSArray) Find(callback func(element any, index int, array JSArray) bool) any {
-	index := s.FindIndex(callback)
+var errNotFound = errors.New("notFound")
+
+func (s JSArray[T]) Find(cb func(element T, index int, array JSArray[T]) bool) (T, error) {
+	index := s.FindIndex(cb)
+	var defVal T
 	if index == -1 {
-		return nil
+		return defVal, errNotFound
 	}
-	return s[index]
+	return s[index], nil
 }
-func (s JSArray) Concat(value ...any) JSArray {
+func (s JSArray[T]) Concat(value ...T) JSArray[T] {
 	len := s.Length()
-	res := New(len)
+	res := make(JSArray[T], len)
 	copy(res, s)
 	res = res.Push(value...)
 	return res
@@ -120,23 +129,25 @@ func (s JSArray) Concat(value ...any) JSArray {
 // 	})
 
 // }
-func (s JSArray) Reduce(callback func(previousValue, curentValue any, currentIndex int, array JSArray) any, initValue any) any {
-	len := s.Length()
-	acc := initValue
+func (s JSArray[T]) Reduce(callback func(previousValue, curentValue T, currentIndex int, array JSArray[T]) T, initValue ...T) T {
+	arrlength := s.Length()
+	var acc T
 
 	startIndex := 0
 
-	if initValue == nil {
+	if len(initValue) == 0 {
 		acc = s[0]
 		startIndex = 1
+	} else {
+		acc = initValue[0]
 	}
-	for i := startIndex; i < len; i++ {
+	for i := startIndex; i < arrlength; i++ {
 		val := s[i]
 		acc = callback(acc, val, i, s)
 	}
 	return acc
 }
-func (s JSArray) Fill(val any, params ...int) JSArray {
+func (s JSArray[T]) Fill(val T, params ...int) JSArray[T] {
 	start := 0
 	end := s.Length()
 	switch len(params) {
@@ -157,8 +168,8 @@ func (s JSArray) Fill(val any, params ...int) JSArray {
 	}
 	return s
 }
-func (s JSArray) Reverse() JSArray {
-	res := New(s.Length())
+func (s JSArray[T]) Reverse() JSArray[T] {
+	res := make(JSArray[T], s.Length())
 	lastIndex := s.Length() - 1
 	for i := lastIndex; i >= 0; i-- {
 		val := s[i]
@@ -167,7 +178,7 @@ func (s JSArray) Reverse() JSArray {
 	copy(s, res)
 	return res
 }
-func (s JSArray) Slice(params ...int) JSArray {
+func (s JSArray[T]) Slice(params ...int) JSArray[T] {
 	start := 0
 	end := s.Length()
 	switch len(params) {
@@ -177,58 +188,63 @@ func (s JSArray) Slice(params ...int) JSArray {
 		start = params[0]
 		end = params[1]
 	}
-
-	res := JSArray{}
-	if start >= s.Length() {
-		return res
+	for start < 0 {
+		start = s.Length() + start
 	}
 	for end < 0 {
 		end = s.Length() + end
 	}
+	res := JSArray[T]{}
+	if start >= s.Length() {
+		return res
+	}
+
 	for i := start; i < end; i++ {
 		if i < s.Length() {
-			res.Push(s[i])
+			res = res.Push(s[i])
 		}
 	}
 	return res
 }
-func (s JSArray) Some(callback func(element any, index int, array JSArray) bool) bool {
+func (s JSArray[T]) Some(cb func(element T, index int, array JSArray[T]) bool) bool {
+
 	len := s.Length()
 	for i := 0; i < len; i++ {
-		if callback(s[i], i, s) {
+		if cb(s[i], i, s) {
 			return true
 		}
 	}
 	return false
 }
-func (s JSArray) Filter(callback func(element any, index int, array JSArray) bool) JSArray {
-	res := JSArray{}
+func (s JSArray[T]) Filter(cb func(element T, index int, array JSArray[T]) bool) JSArray[T] {
+
+	res := JSArray[T]{}
 	len := s.Length()
 	for i := 0; i < len; i++ {
 		val := s[i]
-		if callback(val, i, s) {
+		if cb(val, i, s) {
 			res = res.Push(val)
 		}
 	}
 	return res
 }
-func (s JSArray) Pop() (JSArray, any) {
+func (s JSArray[T]) Pop() (jsArr JSArray[T], poppedVal T) {
 	return s[:s.Length()-1], s[s.Length()-1]
 }
 
-func (s JSArray) Push(elem ...any) JSArray {
+func (s JSArray[T]) Push(elem ...T) JSArray[T] {
 	return append(s, elem...)
 }
 
-func (s JSArray) Shift() (JSArray, any) {
+func (s JSArray[T]) Shift() (jsArr JSArray[T], shiftedVal T) {
 	return s[1:], s[0]
 }
 
-func (s JSArray) Unshift(element ...any) JSArray {
+func (s JSArray[T]) Unshift(element ...T) JSArray[T] {
 	return append(element, s...)
 }
 
-func (slice JSArray) Splice(pointIndex int, removeCount int, element ...any) (JSArray, JSArray) {
+func (slice JSArray[T]) Splice(pointIndex int, removeCount int, element ...T) (jsArr JSArray[T], splicedArr JSArray[T]) {
 
 	for pointIndex < 0 {
 		pointIndex = slice.Length() - 1 + pointIndex
@@ -241,48 +257,48 @@ func (slice JSArray) Splice(pointIndex int, removeCount int, element ...any) (JS
 	}
 	if pointIndex == slice.Length()-1 {
 		if removeCount == 0 {
-			return slice.Push(element...), []any{}
+			return slice.Push(element...), splicedArr
 		}
 		return slice[:slice.Length()-removeCount].Push(element...), slice[slice.Length()-removeCount:]
 
 	}
 	if pointIndex == 0 {
 		if removeCount == 0 {
-			return slice.Unshift(element...), []any{}
+			return slice.Unshift(element...), splicedArr
 		}
 		return slice.Unshift(element...), slice[:removeCount]
 	}
 	if removeCount == 0 {
-		end := JSArray(element).Push(slice[pointIndex:]...)
-		return slice[:pointIndex].Push(end...), []any{}
+		end := JSArray[T](element).Push(slice[pointIndex:]...)
+		return slice[:pointIndex].Push(end...), splicedArr
 	}
 
 	deletedEnd := pointIndex + removeCount
 	if deletedEnd > slice.Length() {
 		deletedEnd = slice.Length()
 	}
-	deleted := New(removeCount)
+	deleted := make(JSArray[T], removeCount)
 	copy(deleted, slice[pointIndex:deletedEnd])
 	undeleted := slice[:pointIndex].Push(slice[pointIndex+removeCount:]...)
-	end := JSArray(element).Push(undeleted[pointIndex:]...)
+	end := JSArray[T](element).Push(undeleted[pointIndex:]...)
 	return undeleted[:pointIndex].Push(end...), deleted
 
 }
 
-func (s JSArray) Includes(searchedVal any) bool {
-	cb := func(element any, index int, array JSArray) bool {
+func (s JSArray[T]) Includes(searchedVal T) bool {
+	cb := func(element T, index int, array JSArray[T]) bool {
 		return element == searchedVal
 	}
 	return s.Some(cb)
 }
-func (s JSArray) IndexOf(searchedVal any) int {
-	return s.FindIndex(func(element any, index int, array JSArray) bool {
+func (s JSArray[T]) IndexOf(searchedVal any) int {
+	return s.FindIndex(func(element T, index int, array JSArray[T]) bool {
 		return element == searchedVal
 	})
 }
-func (s JSArray) Map(callback func(element any, index int, array JSArray) any) JSArray {
+func (s JSArray[T]) Map(callback func(element T, index int, array JSArray[T]) T) JSArray[T] {
 	len := s.Length()
-	res := New(len)
+	res := make(JSArray[T], len)
 
 	for i := 0; i < len; i++ {
 		val := s[i]
